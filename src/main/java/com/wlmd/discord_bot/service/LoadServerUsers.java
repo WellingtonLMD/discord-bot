@@ -1,5 +1,7 @@
 package com.wlmd.discord_bot.service;
 
+// Service that loads server users into the database
+
 import org.springframework.stereotype.Service;
 
 import net.dv8tion.jda.api.entities.Guild;
@@ -25,18 +27,19 @@ public class LoadServerUsers {
 
 		this.userRepository = userRepository;
 	}
-
+	
+	// Method triggered every time the bot enters a server
 	public void loadUsers(GuildJoinEvent guild) {
 		guild.getGuild().loadMembers().onSuccess(members ->{
-			System.out.println("Membros Carregados");
-			System.out.println("Membros: " + members);
+			System.out.println("Members Loaded");
+			System.out.println("Members: " + members);
 			
 			List<UserModel> usersToSave = new ArrayList<>();
 			
 			members.forEach(member -> {
 				UserModel user = new UserModel();				
-				System.out.println("Membros: " + member.getNickname());
-				System.out.println("Membros: " + member.getRoles());
+				System.out.println("Member: " + member.getNickname());
+				System.out.println("Member Roles: " + member.getRoles());
 				user.setGuildId(member.getGuild().getIdLong());
 				user.setDiscordUserId(member.getIdLong());
 				user.setNickName(member.getNickname());
@@ -56,20 +59,22 @@ public class LoadServerUsers {
 				user.setUserTimeCreated(member.getUser().getTimeCreated().toString());
 				
 				usersToSave.add(user);
-				System.out.println("Salvando usuário: " + member.getEffectiveName() + " com roles: " + userRoles.size());
+				System.out.println("Saving user: " + member.getEffectiveName() + " with roles: " + userRoles.size());
 				
 		});
 			userRepository.saveAll(usersToSave);
-			System.out.println("Todos os membros foram salvos no banco!");
+			System.out.println("All members have been saved to the database!");
 		});
 		
 		
 	}
 	
+	// Method triggered by a slash command OLD VERSION
+	// TODO : Currently, when the method is triggered, it does what was intended, but if a user is already registered for the same guild in the database, it throws an exception. The intention is to update the user's data if the user already exists and if the data has changed.
 	public void loadUsersOld(SlashCommandInteractionEvent guild) {
 		guild.getGuild().loadMembers().onSuccess(members ->{
-			System.out.println("Membros Carregados");
-			System.out.println("Membros: " + members);
+			System.out.println("Members Loaded");
+			System.out.println("Members: " + members);
 			
 			
 			List<UserModel> existingUsers = userRepository.findAllByGuildId(guild.getIdLong());
@@ -80,8 +85,8 @@ public class LoadServerUsers {
 			
 			members.forEach(member -> {
 				UserModel user = existingUsersMap.getOrDefault(member.getIdLong(), new UserModel());				
-				System.out.println("Membros: " + member.getNickname());
-				System.out.println("Membros: " + member.getRoles());
+				System.out.println("Member: " + member.getNickname());
+				System.out.println("Member Roles: " + member.getRoles());
 				user.setGuildId(member.getGuild().getIdLong());
 				user.setDiscordUserId(member.getIdLong());
 				user.setNickName(member.getNickname());
@@ -101,35 +106,37 @@ public class LoadServerUsers {
 				user.setUserTimeCreated(member.getUser().getTimeCreated().toString());
 				
 				usersToSave.add(user);
-				System.out.println("Salvando usuário: " + member.getEffectiveName() + " com roles: " + userRoles.size());
+				System.out.println("Saving user: " + member.getEffectiveName() + " with roles: " + userRoles.size());
 				
 		});
 			userRepository.saveAll(usersToSave);
-			System.out.println("Todos os membros foram salvos no banco!");
+			System.out.println("All members have been saved to the database!");
 		});
 		
 		
 	}
 	
 
+	// Version of the previous method proposed by chat GPT, the comments on the method are authored by him.
+	// I believe it is not the ideal solution, but it works, and will be used until the previous method is updated.
 	public void loadUsers(SlashCommandInteractionEvent event) {
 	    var guild = event.getGuild();
 	    guild.loadMembers().onSuccess(members -> {
-	        System.out.println("🔄 Membros carregados: " + members.size());
+	    	System.out.println("Members loaded: " + members.size());
 
-	        // Busca todos os usuários existentes do banco
+	        // Searches for all existing users in the database
 	        //List<UserModel> existingUsers = userRepository.findAllByGuildId(guild.getIdLong());
 	        
 	        List<UserModel> existingUsers = userRepository.findAllByGuildIdWithRoles(guild.getIdLong());
 
-	        // Cria um mapa de lookup por discordUserId
+	        // Creates a lookup map by discordUserId
 	        Map<Long, UserModel> existingUsersMap = existingUsers.stream()
 	                .collect(Collectors.toMap(UserModel::getDiscordUserId, user -> user));
 
 	        List<UserModel> usersToSave = new ArrayList<>();
 
 	        members.forEach(member -> {
-	            // Busca usuário existente
+	        	// Search for existing user
 	            UserModel user = existingUsersMap.get(member.getIdLong());
 	            boolean isNewUser = false;
 
@@ -140,7 +147,7 @@ public class LoadServerUsers {
 	                isNewUser = true;
 	            }
 
-	            // Atualiza os campos (sempre atualiza)
+	            // Updates the fields (always updates)
 	            user.setNickName(member.getNickname());
 	            user.setServerEffectiveName(member.getEffectiveName());
 	            user.setServerTimeJoined(member.getTimeJoined().toString());
@@ -151,7 +158,7 @@ public class LoadServerUsers {
 	            user.setUserAvatarUrl(member.getUser().getAvatarUrl());
 	            user.setUserTimeCreated(member.getUser().getTimeCreated().toString());
 
-	            // Atualiza roles
+	            // Update roles
 	            
 	            final UserModel finalUser = user;
 	            
@@ -173,13 +180,13 @@ public class LoadServerUsers {
 
 
 	            usersToSave.add(user);
-	            System.out.println((isNewUser ? "🆕 Inserindo novo" : "✏️ Atualizando") + 
-	                               " usuário: " + member.getEffectiveName());
+	            System.out.println((isNewUser ? "Inserting new" : "Updating") + 
+                        " user: " + member.getEffectiveName());
 	        });
 
-	        // Salva tudo (JPA vai fazer insert/update conforme necessário)
+	        // Save everything (JPA will perform insert/update as necessary)
 	        userRepository.saveAll(usersToSave);
-	        System.out.println("✅ Todos os usuários foram processados e salvos!");
+	        System.out.println("All users have been processed and saved!");
 	    });
 	}
 

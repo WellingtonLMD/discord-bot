@@ -1,5 +1,7 @@
 package com.wlmd.discord_bot.model;
 
+// The model representing server users
+
 import java.util.ArrayList;
 import java.util.List;
 

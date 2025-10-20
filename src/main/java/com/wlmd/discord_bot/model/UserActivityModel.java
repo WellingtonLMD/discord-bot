@@ -1,5 +1,7 @@
 package com.wlmd.discord_bot.model;
 
+// The model representing the user's activity log (presence) on the server
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

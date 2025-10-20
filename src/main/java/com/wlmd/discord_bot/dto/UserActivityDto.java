@@ -1,5 +1,7 @@
 package com.wlmd.discord_bot.dto;
 
+// TODO: Not currently in use, check if there is a need for it.
+
 public class UserActivityDto {
 	
 	private Long userActivityId;

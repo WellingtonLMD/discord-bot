@@ -16,14 +16,16 @@ public class SlashCommandRegister {
 
     @PostConstruct
     public void registerCommands() {
-        // Apaga todos os comandos antigos e registra apenas os novos
+        // Deletes all old commands and only records new ones
+    	// Every slash command must be registered here.
+    	// TODO: See if there's a better way to do it.
         jda.updateCommands().addCommands(
-            Commands.slash("ping", "Responde com Pong!"),
-            Commands.slash("teste", "Responde com Teste 123!")
+            Commands.slash("ping", "Respond with Pong!"),
+            Commands.slash("teste", "Respond with Teste 123!")
         ).queue(success -> {
-            System.out.println("✅ Comandos slash atualizados com sucesso!");
+            System.out.println("Slash commands successfully updated!");
         }, error -> {
-            System.err.println("❌ Falha ao atualizar comandos: " + error.getMessage());
+            System.err.println("Failed to update commands:  " + error.getMessage());
         });
     }
 }

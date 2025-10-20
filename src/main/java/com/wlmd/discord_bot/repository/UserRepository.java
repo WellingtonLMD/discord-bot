@@ -1,5 +1,7 @@
 package com.wlmd.discord_bot.repository;
 
+// User model repository
+
 import java.util.List;
 import java.util.Optional;
 

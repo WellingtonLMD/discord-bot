@@ -1,5 +1,7 @@
 package com.wlmd.discord_bot.model;
 
+// The model representing a user's roles on the server
+
 import jakarta.persistence.*;
 
 @Entity

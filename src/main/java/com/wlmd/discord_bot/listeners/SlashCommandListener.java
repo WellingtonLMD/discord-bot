@@ -1,5 +1,8 @@
 package com.wlmd.discord_bot.listeners;
 
+// Listener for slash commands, where all slash commands are received and their services are called to execute the actions.
+// TODO: See if this is the most efficient way to do this.
+// TODO: Handle possible exceptions that may be generated 
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.springframework.stereotype.Component;

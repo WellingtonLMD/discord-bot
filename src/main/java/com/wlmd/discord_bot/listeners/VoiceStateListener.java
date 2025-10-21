@@ -9,6 +9,10 @@ import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.channel.unions.AudioChannelUnion;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceUpdateEvent;
+import com.wlmd.discord_bot.repository.UserRepository;
+import com.wlmd.discord_bot.repository.UserActivityRepository;
+import com.wlmd.discord_bot.model.UserModel;
+import com.wlmd.discord_bot.model.UserActivityModel;
 
 // Listener that will be responsible for detecting member activity in voice channels and recording their presence on the server.
 // currently only logs some user and server data where the action occurs
@@ -24,9 +28,24 @@ import net.dv8tion.jda.api.events.guild.voice.GuildVoiceUpdateEvent;
 @Component
 public class VoiceStateListener extends ListenerAdapter  {
 	
+	private final UserActivityRepository userActivityRepository;
+	private final UserRepository UserRepository;
+	
+	
+	
+	public VoiceStateListener(UserActivityRepository userActivityRepository,
+			com.wlmd.discord_bot.repository.UserRepository userRepository) {
+
+		this.userActivityRepository = userActivityRepository;
+		UserRepository = userRepository;
+	}
+
+
+
 	@Override
 	public void onGuildVoiceUpdate(@NotNull GuildVoiceUpdateEvent event) {
-		
+		UserModel user = UserRepository.findByGuildIdAndDiscordUserId(event.getGuild().getIdLong(), event.getMember().getIdLong());
+		System.out.println("TESTE USUARIO: " + user.getNickName());
 		 AudioChannelUnion joinedChannel = event.getChannelJoined();
 		 AudioChannelUnion leftChannel = event.getChannelLeft();
 		 String guildId = event.getGuild().getId();

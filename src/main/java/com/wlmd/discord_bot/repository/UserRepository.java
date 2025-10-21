@@ -12,7 +12,9 @@ import org.springframework.data.repository.query.Param;
 import com.wlmd.discord_bot.model.UserModel;
 
 public interface UserRepository extends JpaRepository<UserModel, Integer> {
-	Optional<UserModel> findByGuildIdAndDiscordUserId(Long guildId, Long discordUserId);
+	//Optional<UserModel> findByGuildIdAndDiscordUserId(Long guildId, Long discordUserId);
+	UserModel findByGuildIdAndDiscordUserId(Long guildId, Long discordUserId);
+	
 	List<UserModel> findAllByGuildId(Long guildId);
 	
     @Query("SELECT u FROM UserModel u LEFT JOIN FETCH u.roles WHERE u.guildId = :guildId")

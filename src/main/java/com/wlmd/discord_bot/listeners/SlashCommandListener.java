@@ -8,7 +8,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.springframework.stereotype.Component;
 import com.wlmd.discord_bot.service.PingService;
 import com.wlmd.discord_bot.service.TestService;
-import com.wlmd.discord_bot.service.LoadServerUsers;
+import com.wlmd.discord_bot.service.LoadServerUsersService;
 import org.jetbrains.annotations.NotNull;
 
 @Component
@@ -16,9 +16,9 @@ public class SlashCommandListener extends ListenerAdapter {
 
     private final PingService pingService;
     private final TestService testService;
-    private final LoadServerUsers loadServerUsers;
+    private final LoadServerUsersService loadServerUsers;
 
-    public SlashCommandListener(PingService pingService, TestService testService, LoadServerUsers loadServerUsers ) {
+    public SlashCommandListener(PingService pingService, TestService testService, LoadServerUsersService loadServerUsers ) {
         this.pingService = pingService;
         this.testService = testService;
         this.loadServerUsers = loadServerUsers;

@@ -16,14 +16,15 @@ import java.util.ArrayList;
 import java.util.stream.Collectors;
 import com.wlmd.discord_bot.model.UserModel;
 import com.wlmd.discord_bot.model.UserRole;
+import com.wlmd.discord_bot.model.UserActivityModel;
 import com.wlmd.discord_bot.repository.UserRepository;
 
 @Service
-public class LoadServerUsers {
+public class LoadServerUsersService {
 	
 	private final UserRepository userRepository;
 	
-	public LoadServerUsers(UserRepository userRepository) {
+	public LoadServerUsersService(UserRepository userRepository) {
 
 		this.userRepository = userRepository;
 	}
@@ -57,6 +58,12 @@ public class LoadServerUsers {
 				user.setUserAvatarId(member.getUser().getAvatarId());
 				user.setUserAvatarUrl(member.getUser().getAvatarUrl());
 				user.setUserTimeCreated(member.getUser().getTimeCreated().toString());
+				
+				// For each user registered in the database, add a record to the user activity table.
+				// TODO: See if this is the best way to do it.
+				//activity.setUser(user);		
+				UserActivityModel activity = new UserActivityModel(user);		
+				user.setUserActivity(activity);
 				
 				usersToSave.add(user);
 				System.out.println("Saving user: " + member.getEffectiveName() + " with roles: " + userRoles.size());
@@ -179,6 +186,12 @@ public class LoadServerUsers {
 	            	}
 
 
+				// For each user registered in the database, add a record to the user activity table.
+				// TODO: See if this is the best way to do it.
+				//activity.setUser(user);		
+				UserActivityModel activity = new UserActivityModel(user);		
+				user.setUserActivity(activity);
+				
 	            usersToSave.add(user);
 	            System.out.println((isNewUser ? "Inserting new" : "Updating") + 
                         " user: " + member.getEffectiveName());

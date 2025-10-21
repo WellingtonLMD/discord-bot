@@ -7,8 +7,11 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
+import com.wlmd.discord_bot.model.UserModel;
 
 @Entity
 @Table(
@@ -18,6 +21,12 @@ import jakarta.persistence.UniqueConstraint;
 		}
 )
 public class UserActivityModel {
+	
+	// For each user registered in the database, add a record to the user activity table.
+	// TODO: See if this is the best way to do it.
+	@OneToOne
+	@JoinColumn(name = "user_id", nullable = false)
+	private UserModel user;
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,7 +39,7 @@ public class UserActivityModel {
 	@Column(nullable = false)
 	private Long guildId;
 	
-	@Column(nullable = false)
+	@Column(nullable = true)
 	private String nickName;
 	
 	@Column(nullable = true)
@@ -44,10 +53,13 @@ public class UserActivityModel {
 	
 	@Column(nullable = true)
 	private int totalTime;
-
-	public UserActivityModel(Long userActivityId, Long discordUserId, Long guildId, String nickName, String lastSeen,
-			String sessionStart, String sessionEnd, int totalTime) {
 	
+	public UserActivityModel() {}
+
+	public UserActivityModel(UserModel user, Long userActivityId, Long discordUserId, Long guildId, String nickName,
+			String lastSeen, String sessionStart, String sessionEnd, int totalTime) {
+
+		this.user = user;
 		this.userActivityId = userActivityId;
 		this.discordUserId = discordUserId;
 		this.guildId = guildId;
@@ -56,6 +68,13 @@ public class UserActivityModel {
 		this.sessionStart = sessionStart;
 		this.sessionEnd = sessionEnd;
 		this.totalTime = totalTime;
+	}
+	
+	public UserActivityModel(UserModel user) {
+	    this.user = user;
+	    this.discordUserId = user.getDiscordUserId();
+	    this.guildId = user.getGuildId();
+	    this.totalTime = 0;
 	}
 
 	public Long getUserActivityId() {
@@ -120,6 +139,14 @@ public class UserActivityModel {
 
 	public void setTotalTime(int totalTime) {
 		this.totalTime = totalTime;
+	}
+
+	public UserModel getUser() {
+		return user;
+	}
+
+	public void setUser(UserModel user) {
+		this.user = user;
 	}
 	
 	

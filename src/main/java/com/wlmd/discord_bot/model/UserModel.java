@@ -17,7 +17,9 @@ import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import net.dv8tion.jda.api.entities.Role;
+import com.wlmd.discord_bot.model.UserActivityModel;
 
 
 @Entity
@@ -26,6 +28,11 @@ import net.dv8tion.jda.api.entities.Role;
 	    uniqueConstraints = @UniqueConstraint(columnNames = {"guildId", "discordUserId"})
 	)
 public class UserModel {
+	
+	// For each user registered in the database, add a record to the user activity table.
+	// TODO: See if this is the best way to do it.
+	@OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+	private UserActivityModel userActivity;
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -70,10 +77,14 @@ public class UserModel {
 
 	public UserModel() {}
 	
-	public UserModel(int userId, Long guildId, Long discordUserId, String nickName, String serverEffectiveName,
-			List<UserRole> roles, String serverTimeJoined, String globalName, String userName, String userEffectiveName,
-			String userAvatarId, String userAvatarUrl, String userTimeCreated) {
+	
 
+	public UserModel(UserActivityModel userActivity, int userId, Long guildId, Long discordUserId, String nickName,
+			String serverEffectiveName, List<UserRole> roles, String serverTimeJoined, String globalName,
+			String userName, String userEffectiveName, String userAvatarId, String userAvatarUrl,
+			String userTimeCreated) {
+
+		this.userActivity = userActivity;
 		this.userId = userId;
 		this.guildId = guildId;
 		this.discordUserId = discordUserId;
@@ -88,6 +99,7 @@ public class UserModel {
 		this.userAvatarUrl = userAvatarUrl;
 		this.userTimeCreated = userTimeCreated;
 	}
+
 
 	public int getUserId() {
 		return userId;
@@ -191,6 +203,14 @@ public class UserModel {
 
 	public void setUserTimeCreated(String userTimeCreated) {
 		this.userTimeCreated = userTimeCreated;
+	}
+
+	public UserActivityModel getUserActivity() {
+		return userActivity;
+	}
+
+	public void setUserActivity(UserActivityModel userActivity) {
+		this.userActivity = userActivity;
 	}
 	
 		

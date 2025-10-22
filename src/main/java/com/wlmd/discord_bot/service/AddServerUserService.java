@@ -11,14 +11,18 @@ import com.wlmd.discord_bot.model.UserModel;
 import com.wlmd.discord_bot.model.UserRole;
 import com.wlmd.discord_bot.model.UserActivityModel;
 import com.wlmd.discord_bot.repository.UserRepository;
+import com.wlmd.discord_bot.repository.GuildRepository;
+import com.wlmd.discord_bot.model.GuildModel;
 
 @Service
 public class AddServerUserService {
 
 	private final UserRepository userRepository;
+	private final GuildRepository guildRepository;
 
-	public AddServerUserService(UserRepository userRepository) {
+	public AddServerUserService(UserRepository userRepository, GuildRepository guildRepository) {
 		this.userRepository = userRepository;
+		this.guildRepository = guildRepository;
 	}
 
 	// Method triggered every time a new user join the server
@@ -29,7 +33,8 @@ public class AddServerUserService {
 		UserModel user = new UserModel();		
 		System.out.println("Member: " + member.getMember().getNickname());
 		System.out.println("Member Roles: " + member.getMember().getRoles());
-		user.setGuildId(member.getGuild().getIdLong());
+		GuildModel guild = guildRepository.findByGuildId(member.getGuild().getIdLong());
+		user.setGuild(guild);
 		user.setDiscordUserId(member.getUser().getIdLong()); 
 		user.setNickName(member.getMember().getNickname());
 		user.setServerEffectiveName(member.getMember().getEffectiveName());

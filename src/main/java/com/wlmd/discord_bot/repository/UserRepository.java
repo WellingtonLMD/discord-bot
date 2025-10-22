@@ -13,11 +13,16 @@ import com.wlmd.discord_bot.model.UserModel;
 
 public interface UserRepository extends JpaRepository<UserModel, Integer> {
 	//Optional<UserModel> findByGuildIdAndDiscordUserId(Long guildId, Long discordUserId);
-	UserModel findByGuildIdAndDiscordUserId(Long guildId, Long discordUserId);
+	UserModel findByGuild_GuildIdAndDiscordUserId(Long guildId, Long discordUserId);
 	
-	List<UserModel> findAllByGuildId(Long guildId);
+	List<UserModel> findAllByGuild_GuildId(Long guildId);
 	
-    @Query("SELECT u FROM UserModel u LEFT JOIN FETCH u.roles WHERE u.guildId = :guildId")
-    List<UserModel> findAllByGuildIdWithRoles(@Param("guildId") Long guildId);
+	@Query("""
+		       SELECT DISTINCT u 
+		       FROM UserModel u 
+		       LEFT JOIN FETCH u.roles 
+		       WHERE u.guild.guildId = :guildId
+		       """)
+	List<UserModel> findAllByGuild_GuildIdWithRoles(@Param("guildId") Long guildId);
 
 }

@@ -4,32 +4,38 @@ package com.wlmd.discord_bot.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import net.dv8tion.jda.api.entities.Role;
 import com.wlmd.discord_bot.model.UserActivityModel;
+import com.wlmd.discord_bot.model.GuildModel;
 
 
 @Entity
 @Table(
 	    name = "Users",
-	    uniqueConstraints = @UniqueConstraint(columnNames = {"guildId", "discordUserId"})
+	    uniqueConstraints = @UniqueConstraint(columnNames = {"guild_id", "discordUserId"})
 	)
 public class UserModel {
 	
-	// For each user registered in the database, add a record to the user activity table.
+	// One-to-one relationship with the user's activity record.
+	// A UserActivityModel must be created and linked to the user manually before saving.
+	// Cascade ensures that when a user is saved or deleted, the activity record is also persisted or removed.
 	// TODO: See if this is the best way to do it.
 	@OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
 	private UserActivityModel userActivity;
@@ -37,10 +43,14 @@ public class UserModel {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(nullable = false)
-	private int userId;
+	private Long userId;
 	
-	@Column(nullable = false)
-	private Long guildId;
+	//@Column(nullable = false)
+	//private Long guildId;
+	
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "guild_id", nullable = false)
+	private GuildModel guild;
 		
 	@Column(nullable = false)
 	private Long discordUserId;
@@ -79,14 +89,14 @@ public class UserModel {
 	
 	
 
-	public UserModel(UserActivityModel userActivity, int userId, Long guildId, Long discordUserId, String nickName,
+	public UserModel(UserActivityModel userActivity, Long userId, GuildModel guild, Long discordUserId, String nickName,
 			String serverEffectiveName, List<UserRole> roles, String serverTimeJoined, String globalName,
 			String userName, String userEffectiveName, String userAvatarId, String userAvatarUrl,
 			String userTimeCreated) {
 
 		this.userActivity = userActivity;
 		this.userId = userId;
-		this.guildId = guildId;
+		this.guild = guild;
 		this.discordUserId = discordUserId;
 		this.nickName = nickName;
 		this.serverEffectiveName = serverEffectiveName;
@@ -101,20 +111,21 @@ public class UserModel {
 	}
 
 
-	public int getUserId() {
+	public Long getUserId() {
 		return userId;
 	}
 
-	public void setUserId(int userId) {
+	public void setUserId(Long userId) {
 		this.userId = userId;
 	}
 
-	public Long getGuildId() {
-		return guildId;
+
+	public GuildModel getGuild() {
+		return guild;
 	}
 
-	public void setGuildId(Long guildId) {
-		this.guildId = guildId;
+	public void setGuild(GuildModel guild) {
+		this.guild = guild;
 	}
 
 	public Long getDiscordUserId() {
@@ -213,5 +224,13 @@ public class UserModel {
 		this.userActivity = userActivity;
 	}
 	
-		
+	public void updateRoles(List<Role> discordRoles) {
+	    this.roles.clear();
+	    this.roles.addAll(
+	        discordRoles.stream()
+	            .map(r -> new UserRole(r.getIdLong(), r.getName(), this))
+	            .collect(Collectors.toList())
+	    );
+	}
+	
 }

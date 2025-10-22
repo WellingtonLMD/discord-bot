@@ -22,7 +22,9 @@ import com.wlmd.discord_bot.model.UserModel;
 )
 public class UserActivityModel {
 	
-	// For each user registered in the database, add a record to the user activity table.
+	// Defines the owning side of the one-to-one relationship with UserModel.
+	// Each UserActivityModel is linked to exactly one UserModel via the user_id foreign key.
+	// The activity record must be created and linked manually when registering a new user.
 	// TODO: See if this is the best way to do it.
 	@OneToOne
 	@JoinColumn(name = "user_id", nullable = false)
@@ -73,7 +75,7 @@ public class UserActivityModel {
 	public UserActivityModel(UserModel user) {
 	    this.user = user;
 	    this.discordUserId = user.getDiscordUserId();
-	    this.guildId = user.getGuildId();
+	    this.guildId = user.getGuild().getGuildId();
 	    this.totalTime = 0;
 	}
 

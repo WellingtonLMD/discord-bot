@@ -44,7 +44,7 @@ public class VoiceStateListener extends ListenerAdapter  {
 
 	@Override
 	public void onGuildVoiceUpdate(@NotNull GuildVoiceUpdateEvent event) {
-		UserModel user = UserRepository.findByGuildIdAndDiscordUserId(event.getGuild().getIdLong(), event.getMember().getIdLong());
+		UserModel user = UserRepository.findByGuild_GuildIdAndDiscordUserId(event.getGuild().getIdLong(), event.getMember().getIdLong());
 		System.out.println("TESTE USUARIO: " + user.getNickName());
 		 AudioChannelUnion joinedChannel = event.getChannelJoined();
 		 AudioChannelUnion leftChannel = event.getChannelLeft();

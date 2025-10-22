@@ -19,14 +19,21 @@ import com.wlmd.discord_bot.model.UserRole;
 import com.wlmd.discord_bot.model.UserActivityModel;
 import com.wlmd.discord_bot.repository.UserRepository;
 
+import jakarta.transaction.Transactional;
+
+import com.wlmd.discord_bot.repository.GuildRepository;
+import com.wlmd.discord_bot.model.GuildModel;
+
 @Service
 public class LoadServerUsersService {
 	
 	private final UserRepository userRepository;
+	private final GuildRepository guildRepository;
 	
-	public LoadServerUsersService(UserRepository userRepository) {
+	public LoadServerUsersService(UserRepository userRepository, GuildRepository guildRepository) {
 
 		this.userRepository = userRepository;
+		this.guildRepository = guildRepository;
 	}
 	
 	// Method triggered every time the bot enters a server
@@ -36,12 +43,13 @@ public class LoadServerUsersService {
 			System.out.println("Members: " + members);
 			
 			List<UserModel> usersToSave = new ArrayList<>();
+			GuildModel userGuild = guildRepository.findByGuildId(guild.getGuild().getIdLong());
 			
 			members.forEach(member -> {
 				UserModel user = new UserModel();				
 				System.out.println("Member: " + member.getNickname());
 				System.out.println("Member Roles: " + member.getRoles());
-				user.setGuildId(member.getGuild().getIdLong());
+				user.setGuild(userGuild);
 				user.setDiscordUserId(member.getIdLong());
 				user.setNickName(member.getNickname());
 				user.setServerEffectiveName(member.getEffectiveName());
@@ -83,8 +91,9 @@ public class LoadServerUsersService {
 			System.out.println("Members Loaded");
 			System.out.println("Members: " + members);
 			
+			GuildModel userGuild = guildRepository.findByGuildId(guild.getGuild().getIdLong());
 			
-			List<UserModel> existingUsers = userRepository.findAllByGuildId(guild.getIdLong());
+			List<UserModel> existingUsers = userRepository.findAllByGuild_GuildId(guild.getIdLong());
 			Map<Long, UserModel> existingUsersMap = existingUsers.stream()
 			    .collect(Collectors.toMap(UserModel::getDiscordUserId, user -> user));
 			
@@ -94,7 +103,7 @@ public class LoadServerUsersService {
 				UserModel user = existingUsersMap.getOrDefault(member.getIdLong(), new UserModel());				
 				System.out.println("Member: " + member.getNickname());
 				System.out.println("Member Roles: " + member.getRoles());
-				user.setGuildId(member.getGuild().getIdLong());
+				user.setGuild(userGuild);
 				user.setDiscordUserId(member.getIdLong());
 				user.setNickName(member.getNickname());
 				user.setServerEffectiveName(member.getEffectiveName());
@@ -126,15 +135,17 @@ public class LoadServerUsersService {
 
 	// Version of the previous method proposed by chat GPT, the comments on the method are authored by him.
 	// I believe it is not the ideal solution, but it works, and will be used until the previous method is updated.
-	public void loadUsers(SlashCommandInteractionEvent event) {
+	public void loadUsersOld2(SlashCommandInteractionEvent event) {
 	    var guild = event.getGuild();
 	    guild.loadMembers().onSuccess(members -> {
 	    	System.out.println("Members loaded: " + members.size());
-
+	    	
+	    	GuildModel userGuild = guildRepository.findByGuildId(guild.getIdLong());
+	    	
 	        // Searches for all existing users in the database
 	        //List<UserModel> existingUsers = userRepository.findAllByGuildId(guild.getIdLong());
 	        
-	        List<UserModel> existingUsers = userRepository.findAllByGuildIdWithRoles(guild.getIdLong());
+	        List<UserModel> existingUsers = userRepository.findAllByGuild_GuildIdWithRoles(guild.getIdLong());
 
 	        // Creates a lookup map by discordUserId
 	        Map<Long, UserModel> existingUsersMap = existingUsers.stream()
@@ -149,7 +160,7 @@ public class LoadServerUsersService {
 
 	            if (user == null) {
 	                user = new UserModel();
-	                user.setGuildId(guild.getIdLong());
+	                user.setGuild(userGuild);
 	                user.setDiscordUserId(member.getIdLong());
 	                isNewUser = true;
 	            }
@@ -202,6 +213,47 @@ public class LoadServerUsersService {
 	        System.out.println("All users have been processed and saved!");
 	    });
 	}
+	
+	// Version of the previous method proposed by chat GPT, the comments on the method are authored by him.
+	// I believe it is not the ideal solution, but it works, and will be used until the previous method is updated.
+	@Transactional
+	public void loadUsers(SlashCommandInteractionEvent event) {
+	    var guild = event.getGuild();
 
+	    guild.loadMembers().onSuccess(members -> {
+	        GuildModel userGuild = guildRepository.findByGuildId(guild.getIdLong());
+	        List<UserModel> existingUsers = userRepository.findAllByGuild_GuildIdWithRoles(guild.getIdLong());
+	        Map<Long, UserModel> userMap = existingUsers.stream()
+	                .collect(Collectors.toMap(UserModel::getDiscordUserId, u -> u));
+
+	        for (Member member : members) {
+	            UserModel user = userMap.computeIfAbsent(member.getIdLong(), id -> {
+	                UserModel newUser = new UserModel();
+	                newUser.setGuild(userGuild);
+	                newUser.setDiscordUserId(id);
+	                return newUser;
+	            });
+
+	            // Update basic data
+	            user.setNickName(member.getNickname());
+	            user.setServerEffectiveName(member.getEffectiveName());
+	            user.setGlobalName(member.getUser().getGlobalName());
+	            user.setUserName(member.getUser().getName());
+	            user.setUserAvatarUrl(member.getUser().getAvatarUrl());
+	            user.setUserTimeCreated(member.getUser().getTimeCreated().toString());
+
+	            // Updates roles with the encapsulated method
+	            user.updateRoles(member.getRoles());
+
+	            // Create activity if it does not already exist
+	            if (user.getUserActivity() == null) {
+	                user.setUserActivity(new UserActivityModel(user));
+	            }
+	        }
+
+	        userRepository.saveAll(userMap.values());
+	        System.out.println("All users have been processed and saved!");
+	    });
+	}
 
 }

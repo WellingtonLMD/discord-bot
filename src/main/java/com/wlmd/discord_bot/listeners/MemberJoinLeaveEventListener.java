@@ -12,13 +12,13 @@ import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
 import com.wlmd.discord_bot.service.AddServerUserService;
 
 @Component
-public class MemberJoinLeaveListener extends ListenerAdapter {
+public class MemberJoinLeaveEventListener extends ListenerAdapter {
 	
 	private final AddServerUserService addServerUser;
 	
 	
 	
-	public MemberJoinLeaveListener(AddServerUserService addServerUser) {
+	public MemberJoinLeaveEventListener(AddServerUserService addServerUser) {
 
 		this.addServerUser = addServerUser;
 	}

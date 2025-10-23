@@ -26,14 +26,14 @@ import com.wlmd.discord_bot.model.UserActivityModel;
    			// classes so as not to pollute the code and to separate responsibilities.
 
 @Component
-public class VoiceStateListener extends ListenerAdapter  {
+public class GuildVoiceUpdateEventListener extends ListenerAdapter  {
 	
 	private final UserActivityRepository userActivityRepository;
 	private final UserRepository UserRepository;
 	
 	
 	
-	public VoiceStateListener(UserActivityRepository userActivityRepository,
+	public GuildVoiceUpdateEventListener(UserActivityRepository userActivityRepository,
 			com.wlmd.discord_bot.repository.UserRepository userRepository) {
 
 		this.userActivityRepository = userActivityRepository;

@@ -10,7 +10,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 // TODO: Make the startup log more robust
 
 @Component
-public class ReadyListener extends ListenerAdapter {
+public class ReadyEventListener extends ListenerAdapter {
 
     @Override
     public void onReady(@NotNull ReadyEvent event) {

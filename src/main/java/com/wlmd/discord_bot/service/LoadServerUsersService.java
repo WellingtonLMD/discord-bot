@@ -14,10 +14,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
-import com.wlmd.discord_bot.model.UserModel;
-import com.wlmd.discord_bot.model.UserRole;
-import com.wlmd.discord_bot.model.UserActivityModel;
-import com.wlmd.discord_bot.repository.UserRepository;
+import com.wlmd.discord_bot.model.MemberModel;
+import com.wlmd.discord_bot.model.MemberRole;
+import com.wlmd.discord_bot.model.MemberActivityModel;
+import com.wlmd.discord_bot.repository.MemberRepository;
 
 import jakarta.transaction.Transactional;
 
@@ -27,10 +27,10 @@ import com.wlmd.discord_bot.model.GuildModel;
 @Service
 public class LoadServerUsersService {
 	
-	private final UserRepository userRepository;
+	private final MemberRepository userRepository;
 	private final GuildRepository guildRepository;
 	
-	public LoadServerUsersService(UserRepository userRepository, GuildRepository guildRepository) {
+	public LoadServerUsersService(MemberRepository userRepository, GuildRepository guildRepository) {
 
 		this.userRepository = userRepository;
 		this.guildRepository = guildRepository;
@@ -42,11 +42,11 @@ public class LoadServerUsersService {
 			System.out.println("Members Loaded");
 			System.out.println("Members: " + members);
 			
-			List<UserModel> usersToSave = new ArrayList<>();
+			List<MemberModel> usersToSave = new ArrayList<>();
 			GuildModel userGuild = guildRepository.findByGuildId(guild.getGuild().getIdLong());
 			
 			members.forEach(member -> {
-				UserModel user = new UserModel();				
+				MemberModel user = new MemberModel();				
 				System.out.println("Member: " + member.getNickname());
 				System.out.println("Member Roles: " + member.getRoles());
 				user.setGuild(userGuild);
@@ -54,8 +54,8 @@ public class LoadServerUsersService {
 				user.setNickName(member.getNickname());
 				user.setServerEffectiveName(member.getEffectiveName());
 				
-				List<UserRole> userRoles = member.getRoles().stream()
-						.map(role -> new UserRole(role.getIdLong(), role.getName(), user))
+				List<MemberRole> userRoles = member.getRoles().stream()
+						.map(role -> new MemberRole(role.getIdLong(), role.getName(), user))
 						.collect(Collectors.toList());
 				
 				user.setRoles(userRoles);
@@ -70,8 +70,8 @@ public class LoadServerUsersService {
 				// For each user registered in the database, add a record to the user activity table.
 				// TODO: See if this is the best way to do it.
 				//activity.setUser(user);		
-				UserActivityModel activity = new UserActivityModel(user);		
-				user.setUserActivity(activity);
+				MemberActivityModel activity = new MemberActivityModel(user);		
+				user.setMemberActivity(activity);
 				
 				usersToSave.add(user);
 				System.out.println("Saving user: " + member.getEffectiveName() + " with roles: " + userRoles.size());
@@ -93,14 +93,14 @@ public class LoadServerUsersService {
 			
 			GuildModel userGuild = guildRepository.findByGuildId(guild.getGuild().getIdLong());
 			
-			List<UserModel> existingUsers = userRepository.findAllByGuild_GuildId(guild.getIdLong());
-			Map<Long, UserModel> existingUsersMap = existingUsers.stream()
-			    .collect(Collectors.toMap(UserModel::getDiscordUserId, user -> user));
+			List<MemberModel> existingUsers = userRepository.findAllByGuild_GuildId(guild.getIdLong());
+			Map<Long, MemberModel> existingUsersMap = existingUsers.stream()
+			    .collect(Collectors.toMap(MemberModel::getDiscordUserId, user -> user));
 			
-			List<UserModel> usersToSave = new ArrayList<>();
+			List<MemberModel> usersToSave = new ArrayList<>();
 			
 			members.forEach(member -> {
-				UserModel user = existingUsersMap.getOrDefault(member.getIdLong(), new UserModel());				
+				MemberModel user = existingUsersMap.getOrDefault(member.getIdLong(), new MemberModel());				
 				System.out.println("Member: " + member.getNickname());
 				System.out.println("Member Roles: " + member.getRoles());
 				user.setGuild(userGuild);
@@ -108,8 +108,8 @@ public class LoadServerUsersService {
 				user.setNickName(member.getNickname());
 				user.setServerEffectiveName(member.getEffectiveName());
 				
-				List<UserRole> userRoles = member.getRoles().stream()
-						.map(role -> new UserRole(role.getIdLong(), role.getName(), user))
+				List<MemberRole> userRoles = member.getRoles().stream()
+						.map(role -> new MemberRole(role.getIdLong(), role.getName(), user))
 						.collect(Collectors.toList());
 				
 				user.setRoles(userRoles);
@@ -145,21 +145,21 @@ public class LoadServerUsersService {
 	        // Searches for all existing users in the database
 	        //List<UserModel> existingUsers = userRepository.findAllByGuildId(guild.getIdLong());
 	        
-	        List<UserModel> existingUsers = userRepository.findAllByGuild_GuildIdWithRoles(guild.getIdLong());
+	        List<MemberModel> existingUsers = userRepository.findAllByGuild_GuildIdWithRoles(guild.getIdLong());
 
 	        // Creates a lookup map by discordUserId
-	        Map<Long, UserModel> existingUsersMap = existingUsers.stream()
-	                .collect(Collectors.toMap(UserModel::getDiscordUserId, user -> user));
+	        Map<Long, MemberModel> existingUsersMap = existingUsers.stream()
+	                .collect(Collectors.toMap(MemberModel::getDiscordUserId, user -> user));
 
-	        List<UserModel> usersToSave = new ArrayList<>();
+	        List<MemberModel> usersToSave = new ArrayList<>();
 
 	        members.forEach(member -> {
 	        	// Search for existing user
-	            UserModel user = existingUsersMap.get(member.getIdLong());
+	            MemberModel user = existingUsersMap.get(member.getIdLong());
 	            boolean isNewUser = false;
 
 	            if (user == null) {
-	                user = new UserModel();
+	                user = new MemberModel();
 	                user.setGuild(userGuild);
 	                user.setDiscordUserId(member.getIdLong());
 	                isNewUser = true;
@@ -178,10 +178,10 @@ public class LoadServerUsersService {
 
 	            // Update roles
 	            
-	            final UserModel finalUser = user;
+	            final MemberModel finalUser = user;
 	            
 	            List<String> currentRoleNames = user.getRoles().stream()
-	            	    .map(UserRole::getRoleName)
+	            	    .map(MemberRole::getRoleName)
 	            	    .toList();
 
 	            	List<Role> discordRoles = member.getRoles();
@@ -190,8 +190,8 @@ public class LoadServerUsersService {
 	            	    !discordRoles.stream().map(Role::getName).toList().equals(currentRoleNames);
 
 	            	if (rolesChanged) {
-	            	    List<UserRole> userRoles = discordRoles.stream()
-	            	        .map(role -> new UserRole(role.getIdLong(), role.getName(), finalUser))
+	            	    List<MemberRole> userRoles = discordRoles.stream()
+	            	        .map(role -> new MemberRole(role.getIdLong(), role.getName(), finalUser))
 	            	        .collect(Collectors.toList());
 	            	    user.setRoles(userRoles);
 	            	}
@@ -200,8 +200,8 @@ public class LoadServerUsersService {
 				// For each user registered in the database, add a record to the user activity table.
 				// TODO: See if this is the best way to do it.
 				//activity.setUser(user);		
-				UserActivityModel activity = new UserActivityModel(user);		
-				user.setUserActivity(activity);
+				MemberActivityModel activity = new MemberActivityModel(user);		
+				user.setMemberActivity(activity);
 				
 	            usersToSave.add(user);
 	            System.out.println((isNewUser ? "Inserting new" : "Updating") + 
@@ -222,13 +222,13 @@ public class LoadServerUsersService {
 
 	    guild.loadMembers().onSuccess(members -> {
 	        GuildModel userGuild = guildRepository.findByGuildId(guild.getIdLong());
-	        List<UserModel> existingUsers = userRepository.findAllByGuild_GuildIdWithRoles(guild.getIdLong());
-	        Map<Long, UserModel> userMap = existingUsers.stream()
-	                .collect(Collectors.toMap(UserModel::getDiscordUserId, u -> u));
+	        List<MemberModel> existingUsers = userRepository.findAllByGuild_GuildIdWithRoles(guild.getIdLong());
+	        Map<Long, MemberModel> userMap = existingUsers.stream()
+	                .collect(Collectors.toMap(MemberModel::getDiscordUserId, u -> u));
 
 	        for (Member member : members) {
-	            UserModel user = userMap.computeIfAbsent(member.getIdLong(), id -> {
-	                UserModel newUser = new UserModel();
+	            MemberModel user = userMap.computeIfAbsent(member.getIdLong(), id -> {
+	                MemberModel newUser = new MemberModel();
 	                newUser.setGuild(userGuild);
 	                newUser.setDiscordUserId(id);
 	                return newUser;
@@ -246,8 +246,8 @@ public class LoadServerUsersService {
 	            user.updateRoles(member.getRoles());
 
 	            // Create activity if it does not already exist
-	            if (user.getUserActivity() == null) {
-	                user.setUserActivity(new UserActivityModel(user));
+	            if (user.getMemberActivity() == null) {
+	                user.setMemberActivity(new MemberActivityModel(user));
 	            }
 	        }
 

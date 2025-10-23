@@ -9,10 +9,10 @@ import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.channel.unions.AudioChannelUnion;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceUpdateEvent;
-import com.wlmd.discord_bot.repository.UserRepository;
+import com.wlmd.discord_bot.repository.MemberRepository;
 import com.wlmd.discord_bot.repository.UserActivityRepository;
-import com.wlmd.discord_bot.model.UserModel;
-import com.wlmd.discord_bot.model.UserActivityModel;
+import com.wlmd.discord_bot.model.MemberModel;
+import com.wlmd.discord_bot.model.MemberActivityModel;
 
 // Listener that will be responsible for detecting member activity in voice channels and recording their presence on the server.
 // currently only logs some user and server data where the action occurs
@@ -29,12 +29,12 @@ import com.wlmd.discord_bot.model.UserActivityModel;
 public class GuildVoiceUpdateEventListener extends ListenerAdapter  {
 	
 	private final UserActivityRepository userActivityRepository;
-	private final UserRepository UserRepository;
+	private final MemberRepository UserRepository;
 	
 	
 	
 	public GuildVoiceUpdateEventListener(UserActivityRepository userActivityRepository,
-			com.wlmd.discord_bot.repository.UserRepository userRepository) {
+			com.wlmd.discord_bot.repository.MemberRepository userRepository) {
 
 		this.userActivityRepository = userActivityRepository;
 		UserRepository = userRepository;
@@ -44,7 +44,7 @@ public class GuildVoiceUpdateEventListener extends ListenerAdapter  {
 
 	@Override
 	public void onGuildVoiceUpdate(@NotNull GuildVoiceUpdateEvent event) {
-		UserModel user = UserRepository.findByGuild_GuildIdAndDiscordUserId(event.getGuild().getIdLong(), event.getMember().getIdLong());
+		MemberModel user = UserRepository.findByGuild_GuildIdAndDiscordUserId(event.getGuild().getIdLong(), event.getMember().getIdLong());
 		System.out.println("TESTE USUARIO: " + user.getNickName());
 		 AudioChannelUnion joinedChannel = event.getChannelJoined();
 		 AudioChannelUnion leftChannel = event.getChannelLeft();

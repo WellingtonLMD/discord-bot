@@ -5,8 +5,8 @@ package com.wlmd.discord_bot.model;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "UserRoles")
-public class UserRole {
+@Table(name = "MemberRoles")
+public class MemberRole {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,14 +20,14 @@ public class UserRole {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userId")
-    private UserModel user;
+    private MemberModel member;
 
-    public UserRole() {}
+    public MemberRole() {}
 
-    public UserRole(Long roleId, String roleName, UserModel user) {
+    public MemberRole(Long roleId, String roleName, MemberModel member) {
         this.roleId = roleId;
         this.roleName = roleName;
-        this.user = user;
+        this.member = member;
     }
 
 	public Long getId() {
@@ -54,12 +54,12 @@ public class UserRole {
 		this.roleName = roleName;
 	}
 
-	public UserModel getUser() {
-		return user;
+	public MemberModel getMember() {
+		return member;
 	}
 
-	public void setUser(UserModel user) {
-		this.user = user;
+	public void setMember(MemberModel member) {
+		this.member = member;
 	}
 
     

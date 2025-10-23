@@ -10,13 +10,13 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
-import com.wlmd.discord_bot.model.UserModel;
+import com.wlmd.discord_bot.model.MemberModel;
 
 @Entity
 public class GuildModel {
 	
 	@OneToMany(mappedBy ="guild", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<UserModel> users = new ArrayList<>();
+	private List<MemberModel> users = new ArrayList<>();
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

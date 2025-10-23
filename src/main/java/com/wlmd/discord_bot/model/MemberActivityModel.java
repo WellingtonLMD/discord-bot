@@ -11,29 +11,29 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
-import com.wlmd.discord_bot.model.UserModel;
+import com.wlmd.discord_bot.model.MemberModel;
 
 @Entity
 @Table(
-		name = "UserActivity",
+		name = "MemberActivity",
 		uniqueConstraints = {
 				@UniqueConstraint(columnNames = {"discordUserId", "guildId"})
 		}
 )
-public class UserActivityModel {
+public class MemberActivityModel {
 	
 	// Defines the owning side of the one-to-one relationship with UserModel.
 	// Each UserActivityModel is linked to exactly one UserModel via the user_id foreign key.
 	// The activity record must be created and linked manually when registering a new user.
 	// TODO: See if this is the best way to do it.
 	@OneToOne
-	@JoinColumn(name = "user_id", nullable = false)
-	private UserModel user;
+	@JoinColumn(name = "userId", nullable = false)
+	private MemberModel member;
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(nullable = false)
-	private Long userActivityId;	
+	private Long memberActivityId;	
 	
 	@Column(nullable = false)
 	private Long discordUserId;
@@ -56,13 +56,13 @@ public class UserActivityModel {
 	@Column(nullable = true)
 	private int totalTime;
 	
-	public UserActivityModel() {}
+	public MemberActivityModel() {}
 
-	public UserActivityModel(UserModel user, Long userActivityId, Long discordUserId, Long guildId, String nickName,
+	public MemberActivityModel(MemberModel member, Long memberActivityId, Long discordUserId, Long guildId, String nickName,
 			String lastSeen, String sessionStart, String sessionEnd, int totalTime) {
 
-		this.user = user;
-		this.userActivityId = userActivityId;
+		this.member = member;
+		this.memberActivityId = memberActivityId;
 		this.discordUserId = discordUserId;
 		this.guildId = guildId;
 		this.nickName = nickName;
@@ -72,19 +72,19 @@ public class UserActivityModel {
 		this.totalTime = totalTime;
 	}
 	
-	public UserActivityModel(UserModel user) {
-	    this.user = user;
+	public MemberActivityModel(MemberModel user) {
+	    this.member = user;
 	    this.discordUserId = user.getDiscordUserId();
 	    this.guildId = user.getGuild().getGuildId();
 	    this.totalTime = 0;
 	}
 
-	public Long getUserActivityId() {
-		return userActivityId;
+	public Long getMemberActivityId() {
+		return memberActivityId;
 	}
 
-	public void setUserActivityId(Long userActivityId) {
-		this.userActivityId = userActivityId;
+	public void setMemberActivityId(Long userActivityId) {
+		this.memberActivityId = userActivityId;
 	}
 
 	public Long getDiscordUserId() {
@@ -143,12 +143,12 @@ public class UserActivityModel {
 		this.totalTime = totalTime;
 	}
 
-	public UserModel getUser() {
-		return user;
+	public MemberModel getMember() {
+		return member;
 	}
 
-	public void setUser(UserModel user) {
-		this.user = user;
+	public void setMember(MemberModel member) {
+		this.member = member;
 	}
 	
 	

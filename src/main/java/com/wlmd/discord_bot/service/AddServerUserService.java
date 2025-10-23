@@ -7,20 +7,20 @@ import org.springframework.stereotype.Service;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
 import java.util.List;
 import java.util.stream.Collectors;
-import com.wlmd.discord_bot.model.UserModel;
-import com.wlmd.discord_bot.model.UserRole;
-import com.wlmd.discord_bot.model.UserActivityModel;
-import com.wlmd.discord_bot.repository.UserRepository;
+import com.wlmd.discord_bot.model.MemberModel;
+import com.wlmd.discord_bot.model.MemberRole;
+import com.wlmd.discord_bot.model.MemberActivityModel;
+import com.wlmd.discord_bot.repository.MemberRepository;
 import com.wlmd.discord_bot.repository.GuildRepository;
 import com.wlmd.discord_bot.model.GuildModel;
 
 @Service
 public class AddServerUserService {
 
-	private final UserRepository userRepository;
+	private final MemberRepository userRepository;
 	private final GuildRepository guildRepository;
 
-	public AddServerUserService(UserRepository userRepository, GuildRepository guildRepository) {
+	public AddServerUserService(MemberRepository userRepository, GuildRepository guildRepository) {
 		this.userRepository = userRepository;
 		this.guildRepository = guildRepository;
 	}
@@ -30,7 +30,7 @@ public class AddServerUserService {
 	// TODO: Handle exceptions
 	public void addUser(GuildMemberJoinEvent event) {
 		GuildMemberJoinEvent member = event;
-		UserModel user = new UserModel();		
+		MemberModel user = new MemberModel();		
 		System.out.println("Member: " + member.getMember().getNickname());
 		System.out.println("Member Roles: " + member.getMember().getRoles());
 		GuildModel guild = guildRepository.findByGuildId(member.getGuild().getIdLong());
@@ -39,8 +39,8 @@ public class AddServerUserService {
 		user.setNickName(member.getMember().getNickname());
 		user.setServerEffectiveName(member.getMember().getEffectiveName());
 
-		List<UserRole> userRoles = member.getMember().getRoles().stream()
-				.map(role -> new UserRole(role.getIdLong(), role.getName(), user))
+		List<MemberRole> userRoles = member.getMember().getRoles().stream()
+				.map(role -> new MemberRole(role.getIdLong(), role.getName(), user))
 				.collect(Collectors.toList());
 
 		user.setRoles(userRoles);
@@ -55,8 +55,8 @@ public class AddServerUserService {
 		// For each user registered in the database, add a record to the user activity table.
 		// TODO: See if this is the best way to do it.
 		//activity.setUser(user);		
-		UserActivityModel activity = new UserActivityModel(user);		
-		user.setUserActivity(activity);
+		MemberActivityModel activity = new MemberActivityModel(user);		
+		user.setMemberActivity(activity);
 		
 		System.out.println("Saving user: " + member.getMember().getEffectiveName() + " with roles: " + userRoles.size());
 

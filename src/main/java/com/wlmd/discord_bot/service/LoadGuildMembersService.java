@@ -25,12 +25,12 @@ import com.wlmd.discord_bot.repository.GuildRepository;
 import com.wlmd.discord_bot.model.GuildModel;
 
 @Service
-public class LoadServerUsersService {
+public class LoadGuildMembersService {
 	
 	private final MemberRepository userRepository;
 	private final GuildRepository guildRepository;
 	
-	public LoadServerUsersService(MemberRepository userRepository, GuildRepository guildRepository) {
+	public LoadGuildMembersService(MemberRepository userRepository, GuildRepository guildRepository) {
 
 		this.userRepository = userRepository;
 		this.guildRepository = guildRepository;

@@ -9,16 +9,16 @@ import org.springframework.stereotype.Component;
 import jakarta.validation.constraints.NotNull;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
-import com.wlmd.discord_bot.service.AddServerUserService;
+import com.wlmd.discord_bot.service.AddGuildMemberService;
 
 @Component
 public class MemberJoinLeaveEventListener extends ListenerAdapter {
 	
-	private final AddServerUserService addServerUser;
+	private final AddGuildMemberService addServerUser;
 	
 	
 	
-	public MemberJoinLeaveEventListener(AddServerUserService addServerUser) {
+	public MemberJoinLeaveEventListener(AddGuildMemberService addServerUser) {
 
 		this.addServerUser = addServerUser;
 	}
@@ -55,7 +55,7 @@ public class MemberJoinLeaveEventListener extends ListenerAdapter {
 		 System.out.println(" - User Avatar URL: " + userAvatarUrl);
 		 System.out.println(" - User Time Created: " + userTimeCreated);
 		 System.out.println();
-		 addServerUser.addUser(event);
+		 addServerUser.addMember(event);
 	}
 
 }

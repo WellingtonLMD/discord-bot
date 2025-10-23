@@ -5,6 +5,6 @@ package com.wlmd.discord_bot.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import com.wlmd.discord_bot.model.MemberActivityModel;
 
-public interface UserActivityRepository extends JpaRepository<MemberActivityModel, Integer> {
-	
+public interface MemberActivityRepository extends JpaRepository<MemberActivityModel, Integer> {
+	MemberActivityModel findByGuildIdAndDiscordUserId(Long guildId, Long discordUserId);
 }

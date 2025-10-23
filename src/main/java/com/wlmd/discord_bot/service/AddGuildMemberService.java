@@ -15,12 +15,12 @@ import com.wlmd.discord_bot.repository.GuildRepository;
 import com.wlmd.discord_bot.model.GuildModel;
 
 @Service
-public class AddServerUserService {
+public class AddGuildMemberService {
 
 	private final MemberRepository userRepository;
 	private final GuildRepository guildRepository;
 
-	public AddServerUserService(MemberRepository userRepository, GuildRepository guildRepository) {
+	public AddGuildMemberService(MemberRepository userRepository, GuildRepository guildRepository) {
 		this.userRepository = userRepository;
 		this.guildRepository = guildRepository;
 	}
@@ -28,7 +28,7 @@ public class AddServerUserService {
 	// Method triggered every time a new user join the server
 	// TODO: Seeing the best way to do this, this is probably not the ideal way, but for now, it works.
 	// TODO: Handle exceptions
-	public void addUser(GuildMemberJoinEvent event) {
+	public void addMember(GuildMemberJoinEvent event) {
 		GuildMemberJoinEvent member = event;
 		MemberModel user = new MemberModel();		
 		System.out.println("Member: " + member.getMember().getNickname());

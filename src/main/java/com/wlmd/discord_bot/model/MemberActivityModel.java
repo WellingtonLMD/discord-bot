@@ -54,12 +54,12 @@ public class MemberActivityModel {
 	private String sessionEnd;
 	
 	@Column(nullable = true)
-	private int totalTime;
+	private Long totalTime;
 	
 	public MemberActivityModel() {}
 
 	public MemberActivityModel(MemberModel member, Long memberActivityId, Long discordUserId, Long guildId, String nickName,
-			String lastSeen, String sessionStart, String sessionEnd, int totalTime) {
+			String lastSeen, String sessionStart, String sessionEnd, Long totalTime) {
 
 		this.member = member;
 		this.memberActivityId = memberActivityId;
@@ -76,7 +76,7 @@ public class MemberActivityModel {
 	    this.member = user;
 	    this.discordUserId = user.getDiscordUserId();
 	    this.guildId = user.getGuild().getGuildId();
-	    this.totalTime = 0;
+	    this.totalTime = 0L;
 	}
 
 	public Long getMemberActivityId() {
@@ -135,11 +135,11 @@ public class MemberActivityModel {
 		this.sessionEnd = sessionEnd;
 	}
 
-	public int getTotalTime() {
+	public Long getTotalTime() {
 		return totalTime;
 	}
 
-	public void setTotalTime(int totalTime) {
+	public void setTotalTime(Long totalTime) {
 		this.totalTime = totalTime;
 	}
 

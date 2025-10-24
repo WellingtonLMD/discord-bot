@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import com.wlmd.discord_bot.service.PingService;
 import com.wlmd.discord_bot.service.TestService;
 import com.wlmd.discord_bot.service.LoadGuildMembersService;
+import com.wlmd.discord_bot.service.SteamDealsService;
 import org.jetbrains.annotations.NotNull;
 
 @Component
@@ -17,11 +18,13 @@ public class SlashCommandListener extends ListenerAdapter {
     private final PingService pingService;
     private final TestService testService;
     private final LoadGuildMembersService loadServerUsers;
+    private final SteamDealsService steamDealsService;
 
-    public SlashCommandListener(PingService pingService, TestService testService, LoadGuildMembersService loadServerUsers ) {
+    public SlashCommandListener(PingService pingService, TestService testService, LoadGuildMembersService loadServerUsers, SteamDealsService steamDealsService ) {
         this.pingService = pingService;
         this.testService = testService;
         this.loadServerUsers = loadServerUsers;
+        this.steamDealsService = steamDealsService;
     }
 
     @Override
@@ -35,7 +38,8 @@ public class SlashCommandListener extends ListenerAdapter {
         	break;
         case "teste":
         	String testResponse = testService.getTestResponse();
-        	loadServerUsers.loadUsers(event);
+        	//loadServerUsers.loadUsers(event);
+        	steamDealsService.getDeals2();
         	event.reply(testResponse).queue();
         	break;
         }

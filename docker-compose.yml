@@ -1,0 +1,58 @@
+version: '3.8'
+
+networks:
+  discordBotNetwork:
+    driver: bridge
+
+services:
+  db:
+    image: postgres:13
+    container_name: discordBotPostgres
+    restart: always
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgData:/var/lib/postgresql/data
+    networks:
+      - discordBotNetwork
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    restart: always
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=${PGADMIN_EMAIL}
+      - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_PASSWORD}
+    ports:
+      - "5050:80"
+    networks:
+      - discordBotNetwork
+
+  app:
+    build: .
+    container_name: discordBotApp
+    restart: always
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - SPRING_DATASOURCE_URL=${SPRING_DATASOURCE_URL}
+      - SPRING_DATASOURCE_USERNAME=${SPRING_DATASOURCE_USERNAME}
+      - SPRING_DATASOURCE_PASSWORD=${SPRING_DATASOURCE_PASSWORD}
+      - DISCORD_BOT_TOKEN=${DISCORD_BOT_TOKEN}
+    ports:
+      - "8087:8087"
+    volumes:
+      - ./src:/app/src
+      - ./target:/app/target
+      - ~/.m2:/root/.m2
+    depends_on:
+      - db
+    networks:
+      - discordBotNetwork
+
+volumes:
+  pgData:
+  pgadminData:

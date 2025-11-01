@@ -1,9 +1,5 @@
 version: '3.8'
 
-networks:
-  discordBotNetwork:
-    driver: bridge
-
 services:
   db:
     image: postgres:13
@@ -17,8 +13,6 @@ services:
       - "5432:5432"
     volumes:
       - pgData:/var/lib/postgresql/data
-    networks:
-      - discordBotNetwork
 
   pgadmin:
     image: dpage/pgadmin4
@@ -29,8 +23,6 @@ services:
       - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_PASSWORD}
     ports:
       - "5050:80"
-    networks:
-      - discordBotNetwork
 
   app:
     build: .
@@ -50,8 +42,6 @@ services:
       - ~/.m2:/root/.m2
     depends_on:
       - db
-    networks:
-      - discordBotNetwork
 
 volumes:
   pgData:

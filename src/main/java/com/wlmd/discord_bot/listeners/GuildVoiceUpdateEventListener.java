@@ -69,7 +69,7 @@ public class GuildVoiceUpdateEventListener extends ListenerAdapter  {
 
 
 		} else if (joinedChannel != null) {
-			System.out.println("[JOIN] Member joined voice channel Teste 2:");
+			System.out.println("[JOIN] Member joined voice channel Teste 3:");
 			System.out.println(" - Guild ID: " + guildId);
 			System.out.println(" - Discord User ID: " + discordUserId);
 			System.out.println(" - Nickname: " + nickName);

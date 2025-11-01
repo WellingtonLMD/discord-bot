@@ -13,7 +13,6 @@ services:
       - "5432:5432"
     volumes:
       - pgData:/var/lib/postgresql/data
-	  - ./servers.json:/pgadmin4/servers.json
 
   pgadmin:
     image: dpage/pgadmin4
@@ -24,6 +23,8 @@ services:
       - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_PASSWORD}
     ports:
       - "5050:80"
+    volumes:
+      - ./servers.json:/pgadmin4/servers.json
 
   app:
     build: .

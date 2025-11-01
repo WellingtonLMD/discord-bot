@@ -47,6 +47,9 @@ public class GuildVoiceUpdateEventService {
 	}
 	
 	private Long setTotalTime(String sessionStart, String sessionEnd) {
+		if(sessionStart == null) {
+			sessionStart = sessionEnd;
+		}
 		LocalDateTime start = LocalDateTime.parse(sessionStart);
 		LocalDateTime end = LocalDateTime.parse(sessionEnd);
 		Long totalTime = Duration.between(start, end).toMinutes();

@@ -18,20 +18,20 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-		  - name: Deploy via SSH
-		    run: |
-		      ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} <<'EOF'
-		        set -e
-		        echo "Usuário atual: $(whoami)"
-		        cd ${{ secrets.SERVER_PATH }}
-		        echo "Diretório atual: $(pwd)"
-		        echo "Permissões:"
-		        ls -ld .
-		        echo "Pulling latest changes..."
-		        git fetch origin main
-		        git reset --hard origin/main
-		        echo "Rebuilding containers..."
-		        docker compose down
-		        docker compose up -d --build
-		        echo "✅ Deploy completo!"
-		      EOF
+      - name: Deploy via SSH
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} <<'EOF'
+            set -e
+            echo "Usuário atual: $(whoami)"
+            cd ${{ secrets.SERVER_PATH }}
+            echo "Diretório atual: $(pwd)"
+            echo "Permissões:"
+            ls -ld .
+            echo "Pulling latest changes..."
+            git fetch origin main
+            git reset --hard origin/main
+            echo "Rebuilding containers..."
+            docker compose down
+            docker compose up -d --build
+            echo "✅ Deploy completo!"
+          EOF
